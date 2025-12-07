@@ -1,0 +1,132 @@
+import os
+
+music_folder = "music"
+
+if not os.path.exists(music_folder):
+    print(f"پوشه '{music_folder}' وجود ندارد! اول بساز و آهنگ‌ها را داخلش قرار بده.")
+    exit()
+
+songs = [f for f in os.listdir(music_folder) if f.lower().endswith(".mp3")]
+
+if not songs:
+    print("هیچ فایل MP3 یافت نشد!")
+    exit()
+
+html_content = """
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سایت موسیقی آریا 🎵</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazir&display=swap" rel="stylesheet">
+<style>
+body {
+    font-family: 'Vazir', Arial, sans-serif;
+    background: linear-gradient(135deg,#1c1c1c,#4b0061);
+    color: #fff;
+    margin:0; padding:0;
+}
+header {
+    text-align:center;
+    padding:50px 20px;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(5px);
+}
+header h1 {
+    margin:0; font-size:3em; letter-spacing:2px; color:#ffdd00;
+}
+header p {margin-top:10px; font-size:1.2em; color:#fff;}
+.container {display:flex; flex-wrap: wrap; justify-content: center; padding:20px; gap:20px;}
+.card {
+    background: rgba(30,30,30,0.85);
+    border-radius:20px;
+    width:300px;
+    padding:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.7);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow:0 15px 40px rgba(255,221,0,0.7);
+}
+.card h2 {margin:0 0 10px 0; color:#ffdd00; display:flex; align-items:center;}
+.card h2::before {content:"🎵"; margin-right:8px;}
+.card audio {width:100%; outline:none; margin-bottom:10px;}
+a.download {display:block; margin-top:8px; padding:8px 12px; background:#ff005a; color:#fff; text-decoration:none; border-radius:12px; font-weight:bold; transition:0.3s;}
+a.download:hover {background:#7928ca; transform:scale(1.05);}
+footer {text-align:center; padding:20px; background: rgba(0,0,0,0.6); color:#ccc; font-size:0.9em;}
+#player-container {background: rgba(50,50,50,0.9); border-radius:20px; padding:20px; max-width:600px; margin:20px auto; box-shadow:0 10px 30px rgba(0,0,0,0.7);}
+select {width:100%; padding:10px; border-radius:10px; border:none; margin-bottom:15px; font-size:1em;}
+@media(max-width:700px){.container{flex-direction:column; align-items:center;} .card,#player-container{width:90%;}}
+</style>
+</head>
+<body>
+
+<header>
+<h1>سایت موسیقی آریا 🎵</h1>
+<p>پخش حرفه‌ای و دانلود آسان آهنگ‌ها!</p>
+</header>
+
+<div id="player-container">
+<h2>پلیر مرکزی</h2>
+<select id="songSelect">
+"""
+
+for song in songs:
+    song_name = os.path.splitext(song)[0]
+    html_content += f'<option value="{music_folder}/{song}">{song_name}</option>'
+
+html_content += """
+</select>
+<audio id="audioPlayer" controls>
+<source src="" type="audio/mpeg">
+مرورگر شما پشتیبانی نمی‌کند.
+</audio>
+</div>
+
+<div class="container">
+"""
+
+# کارت‌های آهنگ با دکمه دانلود
+for song in songs:
+    song_name = os.path.splitext(song)[0]
+    html_content += f"""
+    <div class="card">
+        <h2>{song_name}</h2>
+        <audio controls>
+            <source src="{music_folder}/{song}" type="audio/mpeg">
+            مرورگر شما پشتیبانی نمی‌کند.
+        </audio>
+        <a class="download" href="{music_folder}/{song}" download>دانلود آهنگ</a>
+    </div>
+    """
+
+html_content += """
+</div>
+
+<script>
+const songSelect = document.getElementById('songSelect');
+const audioPlayer = document.getElementById('audioPlayer');
+songSelect.addEventListener('change', () => {
+    audioPlayer.src = songSelect.value;
+    audioPlayer.play();
+});
+if(songSelect.options.length > 0){
+    audioPlayer.src = songSelect.value;
+}
+</script>
+
+<footer>
+<p>© 2025 سایت موسیقی آریا - All Rights Reserved</p>
+</footer>
+
+</body>
+</html>
+"""
+
+# ذخیره index.html
+with open("index.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+print("✅ سایت شبیه موزیک‌فا ساخته شد! فایل index.html آماده آپلود است.")
